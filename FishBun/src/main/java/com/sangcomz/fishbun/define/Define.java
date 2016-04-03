@@ -14,6 +14,8 @@ public class Define {
 
     public static boolean IS_BUTTON = false;
 
+    public static String TEXT_ALL_VIEW = "All View";
+
 
     //    public static int ACTIONBAR_COLOR = "#3F51B5";
     public static int ACTIONBAR_COLOR = Color.parseColor("#3F51B5");

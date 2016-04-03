@@ -14,7 +14,6 @@ import com.sangcomz.fishbun.R;
 import com.sangcomz.fishbun.bean.ImageBean;
 import com.sangcomz.fishbun.bean.PickedImageBean;
 import com.sangcomz.fishbun.define.Define;
-import com.sangcomz.fishbun.ui.album.AlbumActivity;
 import com.sangcomz.fishbun.ui.picker.PickerController;
 import com.sangcomz.fishbun.util.SquareTextView;
 
@@ -239,8 +238,8 @@ public class PickerGridAdapter
 
         notifyDataSetChanged();
 
-        if(AlbumActivity.changeAlbumPublishSubject.hasObservers())
-            AlbumActivity.changeAlbumPublishSubject.onNext("PATH|" + path);
+//        if(AlbumActivity.changeAlbumPublishSubject.hasObservers())
+//            AlbumActivity.changeAlbumPublishSubject.onNext("PATH|" + path);
     }
 
 }

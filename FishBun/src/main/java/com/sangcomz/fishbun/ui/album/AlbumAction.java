@@ -1,7 +1,10 @@
 package com.sangcomz.fishbun.ui.album;
 
+import com.sangcomz.fishbun.ui.mvp.IAction;
+
 /**
  * Created by sangcomz on 4/3/2016.
  */
-interface AlbumAction {
+interface AlbumAction extends IAction{
+    void displayAlbum();
 }

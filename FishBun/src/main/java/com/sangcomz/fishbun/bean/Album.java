@@ -11,4 +11,5 @@ public class Album implements Serializable {
     public long bucketid;
     public String bucketname;
     public int counter;
+    public String thumnaliImage;
 }
