@@ -19,7 +19,7 @@ import android.view.MenuItem;
 
 import com.bumptech.glide.Glide;
 import com.sangcomz.fishbun.R;
-import com.sangcomz.fishbun.adapter.PickerGridAdapter;
+import com.sangcomz.fishbun.ui.adapter.PickerGridAdapter;
 import com.sangcomz.fishbun.bean.Album;
 import com.sangcomz.fishbun.bean.ImageBean;
 import com.sangcomz.fishbun.bean.PickedImageBean;

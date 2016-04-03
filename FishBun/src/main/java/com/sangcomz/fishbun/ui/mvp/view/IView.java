@@ -1,4 +1,4 @@
-package com.sangcomz.fishbun.ui.mvp;
+package com.sangcomz.fishbun.ui.mvp.view;
 
 /**
  * Created by sangcomz on 4/3/2016.
@@ -6,8 +6,6 @@ package com.sangcomz.fishbun.ui.mvp;
 public interface IView {
 
     void initView();
-
-    void showProgerss();
 
     void checkPermission();
 }

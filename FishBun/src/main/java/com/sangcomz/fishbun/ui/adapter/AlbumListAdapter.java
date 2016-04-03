@@ -1,4 +1,4 @@
-package com.sangcomz.fishbun.adapter;
+package com.sangcomz.fishbun.ui.adapter;
 
 import android.app.Activity;
 import android.content.Intent;

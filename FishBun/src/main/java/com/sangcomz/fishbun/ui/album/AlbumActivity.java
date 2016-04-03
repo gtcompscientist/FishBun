@@ -17,7 +17,7 @@ import android.widget.RelativeLayout;
 
 import com.sangcomz.fishbun.ItemDecoration.DividerItemDecoration;
 import com.sangcomz.fishbun.R;
-import com.sangcomz.fishbun.adapter.AlbumListAdapter;
+import com.sangcomz.fishbun.ui.adapter.AlbumListAdapter;
 import com.sangcomz.fishbun.bean.Album;
 import com.sangcomz.fishbun.define.Define;
 import com.sangcomz.fishbun.permission.PermissionCheck;
@@ -118,11 +118,6 @@ public class AlbumActivity extends AppCompatActivity implements AlbumView {
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         recyclerView.scrollBy(0, position);
-    }
-
-    @Override
-    public void showProgerss() {
-
     }
 
     @Override

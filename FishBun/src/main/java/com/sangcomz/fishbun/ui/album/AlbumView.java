@@ -1,7 +1,7 @@
 package com.sangcomz.fishbun.ui.album;
 
 import com.sangcomz.fishbun.bean.Album;
-import com.sangcomz.fishbun.ui.mvp.IView;
+import com.sangcomz.fishbun.ui.mvp.view.IView;
 
 import java.util.ArrayList;
 
