@@ -31,11 +31,11 @@ import java.io.File;
 import java.util.ArrayList;
 
 
-public class PickerActivity extends AppCompatActivity {
+public class PickerActivity extends AppCompatActivity implements PickerView {
 
     private RecyclerView recyclerView;
     private ArrayList<PickedImageBean> pickedImageBeans;
-    private PickerController pickerController;
+    private PickerPresenter pickerPresenter;
     private Album a;
     private ImageBean[] imageBeans;
     PickerGridAdapter adapter;
@@ -60,22 +60,12 @@ public class PickerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_picker);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setBackgroundColor(Define.ACTIONBAR_COLOR);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            UiUtil.setStatusBarColor(this);
-        }
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        a = (Album) getIntent().getSerializableExtra("album");
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, Define.PHOTO_SPAN_COUNT, GridLayoutManager.VERTICAL, false);
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-        recyclerView.setLayoutManager(gridLayoutManager);
         pickedImageBeans = new ArrayList<>();
 
-        pickerController = new PickerController(this, getSupportActionBar(), recyclerView, a.bucketname);
+        a = (Album) getIntent().getSerializableExtra("album");
+        pickerPresenter = new PickerPresenter(this, getSupportActionBar(), recyclerView, a.bucketname);
 
         ArrayList<String> path = getIntent().getStringArrayListExtra(Define.INTENT_PATH);
         if (path != null) {
@@ -83,16 +73,16 @@ public class PickerActivity extends AppCompatActivity {
                 pickedImageBeans.add(new PickedImageBean(i + 1, path.get(i), -1));
             }
         }
-        pickerController.setActionbarTitle(pickedImageBeans.size());
+
         imageBeans = new ImageBean[a.counter];
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (PermissionCheck.CheckStoragePermission(this))
-                new DisplayImage().execute();
-        } else
-            new DisplayImage().execute();
 
+        initView();
+        initRecyclerView();
+
+
+        checkPermission();
     }
 
 
@@ -130,6 +120,34 @@ public class PickerActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void initView() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setBackgroundColor(Define.ACTIONBAR_COLOR);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            UiUtil.setStatusBarColor(this);
+        }
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        pickerPresenter.setActionbarTitle(pickedImageBeans.size());
+    }
+
+    @Override
+    public void checkPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (PermissionCheck.CheckStoragePermission(this))
+                new DisplayImage().execute();
+        } else
+            new DisplayImage().execute();
+    }
+
+    @Override
+    public void initRecyclerView() {
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, Define.PHOTO_SPAN_COUNT, GridLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(gridLayoutManager);
+    }
+
     private class DisplayImage extends AsyncTask<Void, Void, Boolean> {
 
         @Override
@@ -161,7 +179,7 @@ public class PickerActivity extends AppCompatActivity {
             if (result != null) {
                 if (result) {
                     adapter = new PickerGridAdapter(
-                            imageBeans, pickedImageBeans, pickerController, getPathDir());
+                            imageBeans, pickedImageBeans, pickerPresenter, getPathDir());
                     recyclerView.setAdapter(adapter);
                 }
             }
@@ -229,10 +247,10 @@ public class PickerActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Define.TAKE_A_PICK_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                startFileMediaScan(pickerController.getSavePath());
-                adapter.addImage(pickerController.getSavePath());
+                startFileMediaScan(pickerPresenter.getSavePath());
+                adapter.addImage(pickerPresenter.getSavePath());
             } else {
-                new File(pickerController.getSavePath()).delete();
+                new File(pickerPresenter.getSavePath()).delete();
             }
         }
     }
@@ -249,7 +267,7 @@ public class PickerActivity extends AppCompatActivity {
     private String getPathDir() {
         if (pathDir.equals("") || a.bucketid == 0)
             pathDir = Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DCIM+"/Camera").getAbsolutePath();
+                    Environment.DIRECTORY_DCIM + "/Camera").getAbsolutePath();
         return pathDir;
     }
 

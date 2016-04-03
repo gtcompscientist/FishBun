@@ -17,36 +17,31 @@ import java.util.Date;
 /**
  * Created by sangc on 2015-11-05.
  */
-public class PickerController {
-    PickerActivity pickerActivity;
+public class PickerPresenter implements PickerAction {
+    private PickerView view;
     private RecyclerView recyclerView;
-    private RecyclerView.OnItemTouchListener OnItemTouchListener;
-    ActionBar actionBar;
-    String bucketTitle;
+    private RecyclerView.OnItemTouchListener onItemTouchListener;
+    private ActionBar actionBar;
+    private String bucketTitle;
 
     private String savePath;
 
-    PickerController(PickerActivity pickerActivity, ActionBar actionBar, RecyclerView recyclerView, String bucketTitle) {
-        this.pickerActivity = pickerActivity;
+    PickerPresenter(PickerView view, ActionBar actionBar, RecyclerView recyclerView, String bucketTitle) {
+        this.view = view;
         this.recyclerView = recyclerView;
         this.actionBar = actionBar;
         this.bucketTitle = bucketTitle;
 
-        OnItemTouchListener = new RecyclerView.OnItemTouchListener() {
+        onItemTouchListener = new RecyclerView.OnItemTouchListener() {
             @Override
             public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
                 return true;
             }
 
             @Override
-            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-
-            }
-
+            public void onTouchEvent(RecyclerView rv, MotionEvent e) {}
             @Override
-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-            }
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {}
         };
     }
 
@@ -55,9 +50,9 @@ public class PickerController {
      */
     public void setRecyclerViewClickable(final boolean isAble) {
         if (isAble)
-            recyclerView.removeOnItemTouchListener(OnItemTouchListener);
+            recyclerView.removeOnItemTouchListener(onItemTouchListener);
         else {
-            recyclerView.addOnItemTouchListener(OnItemTouchListener);
+            recyclerView.addOnItemTouchListener(onItemTouchListener);
         }
 
     }
@@ -69,7 +64,7 @@ public class PickerController {
             actionBar.setTitle(bucketTitle + "(" + String.valueOf(total) + "/" + Define.ALBUM_PICKER_COUNT + ")");
     }
 
-    public void takePicture(String saveDir) {
+    public void takePicture(PickerActivity pickerActivity, String saveDir) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         if (takePictureIntent.resolveActivity(pickerActivity.getPackageManager()) != null) {
@@ -86,7 +81,6 @@ public class PickerController {
             if (photoFile != null) {
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
                         Uri.fromFile(photoFile));
-//                Log.d("photoFile path ", String.valueOf(photoFile));
                 pickerActivity.startActivityForResult(takePictureIntent, Define.TAKE_A_PICK_REQUEST_CODE);
             }
         }
@@ -115,4 +109,8 @@ public class PickerController {
         this.savePath = savePath;
     }
 
+    @Override
+    public void stop() {
+
+    }
 }

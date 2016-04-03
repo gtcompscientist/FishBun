@@ -5,5 +5,4 @@ package com.sangcomz.fishbun.ui.mvp.action;
  */
 public interface IAction {
     void stop();
-
 }

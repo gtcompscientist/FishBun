@@ -14,7 +14,7 @@ import com.sangcomz.fishbun.R;
 import com.sangcomz.fishbun.bean.ImageBean;
 import com.sangcomz.fishbun.bean.PickedImageBean;
 import com.sangcomz.fishbun.define.Define;
-import com.sangcomz.fishbun.ui.picker.PickerController;
+import com.sangcomz.fishbun.ui.picker.PickerPresenter;
 import com.sangcomz.fishbun.util.SquareTextView;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ public class PickerGridAdapter
 
     private ArrayList<PickedImageBean> pickedImageBeans = new ArrayList<>();
     private ImageBean[] imageBeans;
-    private PickerController pickerController;
+    private PickerPresenter pickerPresenter;
     private boolean isHeader = Define.IS_CAMERA;
 
     String saveDir;
@@ -57,10 +57,10 @@ public class PickerGridAdapter
     }
 
     public PickerGridAdapter(ImageBean[] imageBeans,
-                             ArrayList<PickedImageBean> pickedImageBeans, PickerController pickerController,
+                             ArrayList<PickedImageBean> pickedImageBeans, PickerPresenter pickerPresenter,
                              String saveDir) {
         this.imageBeans = imageBeans;
-        this.pickerController = pickerController;
+        this.pickerPresenter = pickerPresenter;
         this.pickedImageBeans = pickedImageBeans;
         this.saveDir = saveDir;
     }
@@ -89,7 +89,7 @@ public class PickerGridAdapter
             vh.header.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    pickerController.takePicture(saveDir);
+                    pickerPresenter.takePicture(saveDir);
                 }
             });
         }
@@ -156,9 +156,9 @@ public class PickerGridAdapter
                             vh.txtPickCount.setText(String.valueOf(pickedImageBeans.size()));
 
                         imageBean.setImgOrder(pickedImageBeans.size());
-                        pickerController.setActionbarTitle(pickedImageBeans.size());
+                        pickerPresenter.setActionbarTitle(pickedImageBeans.size());
                     } else if (vh.txtPickCount.getVisibility() == View.VISIBLE) {
-                        pickerController.setRecyclerViewClickable(false);
+                        pickerPresenter.setRecyclerViewClickable(false);
                         pickedImageBeans.remove(imageBean.getImgOrder() - 1);
                         if (Define.ALBUM_PICKER_COUNT != 1)
                             setOrder(Integer.valueOf(vh.txtPickCount.getText().toString()) - 1);
@@ -166,7 +166,7 @@ public class PickerGridAdapter
                             setOrder(0);
                         imageBean.setImgOrder(-1);
                         vh.txtPickCount.setVisibility(View.GONE);
-                        pickerController.setActionbarTitle(pickedImageBeans.size());
+                        pickerPresenter.setActionbarTitle(pickedImageBeans.size());
                     }else {
 //                        Snackbar.make(v.getContext(), v.getContext().getString(R.string.msg_no_slected), Snackbar.LENGTH_SHORT).show();
                         Snackbar.make(v, Define.MESSAGE_LIMIT_REACHED, Snackbar.LENGTH_SHORT).show();
@@ -208,7 +208,7 @@ public class PickerGridAdapter
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                pickerController.setRecyclerViewClickable(true);
+                pickerPresenter.setRecyclerViewClickable(true);
             }
         }, 500);
 
