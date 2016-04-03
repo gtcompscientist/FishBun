@@ -81,13 +81,18 @@ public class AlbumPresenter implements AlbumAction {
     }
 
     protected String getFirstImage() {
+        String path = "";
         String sort = MediaStore.Images.Thumbnails._ID + " DESC";
         Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         Cursor c;
         c = contentResolver.query(images, null,
                 null, null, sort);
-        c.moveToFirst();
-        return c.getString(c.getColumnIndex(MediaStore.Images.Media.DATA));
+        if (c != null) {
+            c.moveToFirst();
+            path = c.getString(c.getColumnIndex(MediaStore.Images.Media.DATA));
+            c.close();
+        }
+        return path;
     }
 
 

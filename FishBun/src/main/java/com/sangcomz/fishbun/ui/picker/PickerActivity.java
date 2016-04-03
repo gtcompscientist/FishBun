@@ -38,9 +38,6 @@ public class PickerActivity extends AppCompatActivity {
     private PickerController pickerController;
     private Album a;
     private ImageBean[] imageBeans;
-    PermissionCheck permissionCheck;
-    private UiUtil uiUtil = new UiUtil();
-
     PickerGridAdapter adapter;
 
     private String pathDir = "";
@@ -67,7 +64,7 @@ public class PickerActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setBackgroundColor(Define.ACTIONBAR_COLOR);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            uiUtil.setStatusBarColor(this);
+            UiUtil.setStatusBarColor(this);
         }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -89,9 +86,9 @@ public class PickerActivity extends AppCompatActivity {
         pickerController.setActionbarTitle(pickedImageBeans.size());
         imageBeans = new ImageBean[a.counter];
 
-        permissionCheck = new PermissionCheck(this);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (permissionCheck.CheckStoragePermission())
+            if (PermissionCheck.CheckStoragePermission(this))
                 new DisplayImage().execute();
         } else
             new DisplayImage().execute();
@@ -182,7 +179,7 @@ public class PickerActivity extends AppCompatActivity {
                     // permission was granted, yay! do the
                     // calendar task you need to do.
                 } else {
-                    permissionCheck.showPermissionDialog();
+                    PermissionCheck.showPermissionDialog(this);
                     finish();
                 }
                 return;

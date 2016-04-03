@@ -17,15 +17,10 @@ import com.sangcomz.fishbun.define.Define;
  * Created by sangc on 2015-10-12.
  */
 public class PermissionCheck {
-    Context context;
-
-    public PermissionCheck(Context context) {
-        this.context = context;
-    }
 
 
     @TargetApi(Build.VERSION_CODES.M)
-    public boolean CheckStoragePermission() {
+    public static boolean CheckStoragePermission(Context context) {
         int permissionCheckRead = ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_EXTERNAL_STORAGE);
         int permissionCheckWrite = ContextCompat.checkSelfPermission(context,
@@ -56,7 +51,7 @@ public class PermissionCheck {
     }
 
 
-    public void showPermissionDialog() {
+    public static void showPermissionDialog(Context context) {
         Toast.makeText(context, "permission deny", Toast.LENGTH_SHORT).show();
     }
 

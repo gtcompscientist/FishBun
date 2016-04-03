@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -27,15 +28,10 @@ import java.util.ArrayList;
 
 public class AlbumActivity extends AppCompatActivity implements AlbumView {
 
-    //    private List<Album> albumlist = new ArrayList<>();
     private RecyclerView recyclerView;
     private AlbumListAdapter adapter;
-    private PermissionCheck permissionCheck;
-    private UiUtil uiUtil = new UiUtil();
     private RelativeLayout noAlbum;
     private AlbumPresenter albumPresenter;
-
-    RecyclerView.Recycler recycler;
     private int position = 0;
 
 
@@ -50,6 +46,10 @@ public class AlbumActivity extends AppCompatActivity implements AlbumView {
     protected void onResume() {
         super.onResume();
         checkPermission();
+        if (UiUtil.isLandscape(this))
+            ((GridLayoutManager) recyclerView.getLayoutManager()).setSpanCount(2);
+        else
+            ((GridLayoutManager) recyclerView.getLayoutManager()).setSpanCount(1);
     }
 
     @Override
@@ -68,7 +68,8 @@ public class AlbumActivity extends AppCompatActivity implements AlbumView {
                 finish();
             } else if (resultCode == Define.TRANS_IMAGES_RESULT_CODE) {
                 ArrayList<String> path = data.getStringArrayListExtra(Define.INTENT_PATH);
-                adapter.setPath(path);
+                if (path != null)
+                    adapter.setPath(path);
             }
         }
     }
@@ -83,7 +84,7 @@ public class AlbumActivity extends AppCompatActivity implements AlbumView {
                     // permission was granted, yay! do the
                     // calendar task you need to do.
                 } else {
-                    permissionCheck.showPermissionDialog();
+                    PermissionCheck.showPermissionDialog(this);
                     finish();
                 }
                 return;
@@ -99,15 +100,13 @@ public class AlbumActivity extends AppCompatActivity implements AlbumView {
         setSupportActionBar(toolbar);
         toolbar.setBackgroundColor(Define.ACTIONBAR_COLOR);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            uiUtil.setStatusBarColor(this);
+            UiUtil.setStatusBarColor(this);
         }
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 1);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         if (recyclerView != null) {
-            recyclerView.setLayoutManager(linearLayoutManager);
+            recyclerView.setLayoutManager(gridLayoutManager);
         }
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
     }
@@ -128,9 +127,8 @@ public class AlbumActivity extends AppCompatActivity implements AlbumView {
 
     @Override
     public void checkPermission() {
-        permissionCheck = new PermissionCheck(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (permissionCheck.CheckStoragePermission()) {
+            if (PermissionCheck.CheckStoragePermission(this)) {
                 albumPresenter.displayAlbum();
             }
         } else
