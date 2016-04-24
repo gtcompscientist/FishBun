@@ -24,8 +24,6 @@ public class AlbumListAdapter
         extends RecyclerView.Adapter<AlbumListAdapter.ViewHolder> {
 
     private List<Album> albumlist;
-//    private List<String> thumbList = new ArrayList<String>();
-//    private String thumPath;
     private ArrayList<String> path;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -47,9 +45,8 @@ public class AlbumListAdapter
         }
     }
 
-    public AlbumListAdapter(List<Album> albumlist, ArrayList<String> path) {
+    public AlbumListAdapter(List<Album> albumlist) {
         this.albumlist = albumlist;
-//        this.path = path;
     }
 
     @Override
@@ -59,32 +56,17 @@ public class AlbumListAdapter
         return new ViewHolder(view);
     }
 
-//    public void setThumbList(List<String> thumbList) {
-//        this.thumbList = thumbList;
-//        notifyDataSetChanged();
-//    }
-
-
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
 
-//        if (thumbList != null && thumbList.size() > position)
-//            thumPath = thumbList.get(position);
+        Glide
+                .with(holder.imgAlbum.getContext())
+                .load(albumlist.get(position).thumnaliImage)
+                .asBitmap()
+                .override(Define.ALBUM_THUMNAIL_SIZE, Define.ALBUM_THUMNAIL_SIZE)
+                .placeholder(R.mipmap.loading_img)
+                .into(holder.imgAlbum);
 
-
-//        if (thumbList != null) {
-//            if (thumbList.size() > position) {
-                Glide
-                        .with(holder.imgAlbum.getContext())
-                        .load(albumlist.get(position).thumnaliImage)
-                        .asBitmap()
-                        .override(Define.ALBUM_THUMNAIL_SIZE, Define.ALBUM_THUMNAIL_SIZE)
-                        .placeholder(R.mipmap.loading_img)
-                        .into(holder.imgAlbum);
-//            } else {
-//                Glide.with(holder.imgAlbum.getContext()).load(R.mipmap.loading_img).into(holder.imgAlbum);
-//            }
-//        }
         holder.areaAlbum.setTag(albumlist.get(position));
         Album a = (Album) holder.areaAlbum.getTag();
         holder.txtAlbum.setText(albumlist.get(position).bucketname);
@@ -99,9 +81,6 @@ public class AlbumListAdapter
                 i.putExtra("album", a);
                 i.putExtra("album_title", albumlist.get(position).bucketname);
                 i.putStringArrayListExtra(Define.INTENT_PATH, path);
-//                if (AlbumActivity.changeAlbumPublishSubject.hasObservers())
-//                    AlbumActivity.changeAlbumPublishSubject.onNext("POSITION|" + String.valueOf(position));
-
                 ((Activity) holder.areaAlbum.getContext()).startActivityForResult(i, Define.ENTER_ALBUM_REQUEST_CODE);
             }
         });
@@ -118,6 +97,11 @@ public class AlbumListAdapter
 
     public ArrayList<String> getPath() {
         return path;
+    }
+
+    public void setAlbumlist(List<Album> albumlist) {
+        this.albumlist = albumlist;
+        notifyDataSetChanged();
     }
 }
 

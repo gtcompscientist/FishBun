@@ -14,11 +14,11 @@ import com.sangcomz.fishbun.R;
 import com.sangcomz.fishbun.bean.ImageBean;
 import com.sangcomz.fishbun.bean.PickedImageBean;
 import com.sangcomz.fishbun.define.Define;
+import com.sangcomz.fishbun.ui.picker.PickerActivity;
 import com.sangcomz.fishbun.ui.picker.PickerPresenter;
 import com.sangcomz.fishbun.util.SquareTextView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 
 public class PickerGridAdapter
@@ -26,8 +26,9 @@ public class PickerGridAdapter
     private static final int TYPE_HEADER = Integer.MIN_VALUE;
 
     private ArrayList<PickedImageBean> pickedImageBeans = new ArrayList<>();
-    private ImageBean[] imageBeans;
+    private ArrayList<ImageBean> imageBeans;
     private PickerPresenter pickerPresenter;
+    private PickerActivity pickerActivity;
     private boolean isHeader = Define.IS_CAMERA;
 
     String saveDir;
@@ -56,7 +57,7 @@ public class PickerGridAdapter
         }
     }
 
-    public PickerGridAdapter(ImageBean[] imageBeans,
+    public PickerGridAdapter(ArrayList<ImageBean> imageBeans,
                              ArrayList<PickedImageBean> pickedImageBeans, PickerPresenter pickerPresenter,
                              String saveDir) {
         this.imageBeans = imageBeans;
@@ -89,7 +90,7 @@ public class PickerGridAdapter
             vh.header.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    pickerPresenter.takePicture(saveDir);
+                    pickerPresenter.takePicture(v.getContext(), saveDir);
                 }
             });
         }
@@ -104,7 +105,7 @@ public class PickerGridAdapter
 
             final ViewHolderImage vh = (ViewHolderImage) holder;
 
-            final ImageBean imageBean = imageBeans[imagePos];
+            final ImageBean imageBean = imageBeans.get(imagePos);
             final String imgPath = imageBean.getImgPath();
 
             if (!imageBean.isInit()) {
@@ -167,7 +168,7 @@ public class PickerGridAdapter
                         imageBean.setImgOrder(-1);
                         vh.txtPickCount.setVisibility(View.GONE);
                         pickerPresenter.setActionbarTitle(pickedImageBeans.size());
-                    }else {
+                    } else {
 //                        Snackbar.make(v.getContext(), v.getContext().getString(R.string.msg_no_slected), Snackbar.LENGTH_SHORT).show();
                         Snackbar.make(v, Define.MESSAGE_LIMIT_REACHED, Snackbar.LENGTH_SHORT).show();
                     }
@@ -180,9 +181,9 @@ public class PickerGridAdapter
     @Override
     public int getItemCount() {
         if (isHeader)
-            return imageBeans.length + 1;
+            return imageBeans.size() + 1;
 
-        return imageBeans.length;
+        return imageBeans.size();
     }
 
     @Override
@@ -197,7 +198,7 @@ public class PickerGridAdapter
     private void setOrder(int removePosition) {
         for (int i = removePosition; i < pickedImageBeans.size(); i++) {
             if (pickedImageBeans.get(i).getImgPosition() != -1) {
-                imageBeans[pickedImageBeans.get(i).getImgPosition()]
+                imageBeans.get(pickedImageBeans.get(i).getImgPosition())
                         .setImgOrder(i + 1);
                 if (isHeader)
                     notifyItemChanged(pickedImageBeans.get(i).getImgPosition() + 1); //if use header +1
@@ -221,17 +222,19 @@ public class PickerGridAdapter
             // Find view by ID and initialize here
         }
 
-        public void bindView(int position) {
-            // bindView() method to implement actions
-        }
+//        public void bindView(int position) {
+//            // bindView() method to implement actions
+//        }
     }
 
     public void addImage(String path) {
-        ArrayList<ImageBean> al = new ArrayList<ImageBean>();
-        Collections.addAll(al, imageBeans);
-        al.add(0, new ImageBean(-1, path));
+//        ArrayList<ImageBean> al = new ArrayList<ImageBean>();
+//        Collections.addAll(al, imageBeans);
+//        al.add(0, new ImageBean(-1, path));
+//
+//        imageBeans = al.toArray(new ImageBean[al.size()]);
 
-        imageBeans = al.toArray(new ImageBean[al.size()]);
+        imageBeans.add(0, new ImageBean(-1, path));
 
         for (int i = 0; i < pickedImageBeans.size(); i++)
             pickedImageBeans.get(i).setImgPosition(pickedImageBeans.get(i).getImgPosition() + 1);

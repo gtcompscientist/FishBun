@@ -8,4 +8,6 @@ import com.sangcomz.fishbun.ui.mvp.view.IView;
 public interface PickerView extends IView {
 
     void initRecyclerView();
+
+    void setImage();
 }

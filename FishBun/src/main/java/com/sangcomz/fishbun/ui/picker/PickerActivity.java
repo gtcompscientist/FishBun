@@ -37,7 +37,7 @@ public class PickerActivity extends AppCompatActivity implements PickerView {
     private ArrayList<PickedImageBean> pickedImageBeans;
     private PickerPresenter pickerPresenter;
     private Album a;
-    private ImageBean[] imageBeans;
+    private ArrayList<ImageBean> imageBeans;
     PickerGridAdapter adapter;
 
     private String pathDir = "";
@@ -60,13 +60,10 @@ public class PickerActivity extends AppCompatActivity implements PickerView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_picker);
 
-
-
+        imageBeans = new ArrayList<>();
         pickedImageBeans = new ArrayList<>();
 
         a = (Album) getIntent().getSerializableExtra("album");
-        pickerPresenter = new PickerPresenter(this, getSupportActionBar(), recyclerView, a.bucketname);
-
         ArrayList<String> path = getIntent().getStringArrayListExtra(Define.INTENT_PATH);
         if (path != null) {
             for (int i = 0; i < path.size(); i++) {
@@ -74,14 +71,8 @@ public class PickerActivity extends AppCompatActivity implements PickerView {
             }
         }
 
-        imageBeans = new ImageBean[a.counter];
-
-
-
         initView();
         initRecyclerView();
-
-
         checkPermission();
     }
 
@@ -129,6 +120,7 @@ public class PickerActivity extends AppCompatActivity implements PickerView {
             UiUtil.setStatusBarColor(this);
         }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        pickerPresenter = new PickerPresenter(this, getSupportActionBar(), recyclerView, a.bucketname);
         pickerPresenter.setActionbarTitle(pickedImageBeans.size());
     }
 
@@ -148,6 +140,11 @@ public class PickerActivity extends AppCompatActivity implements PickerView {
         recyclerView.setLayoutManager(gridLayoutManager);
     }
 
+    @Override
+    public void setImage() {
+
+    }
+
     private class DisplayImage extends AsyncTask<Void, Void, Boolean> {
 
         @Override
@@ -165,7 +162,7 @@ public class PickerActivity extends AppCompatActivity implements PickerView {
         protected Boolean doInBackground(Void... params) {
             boolean flag = true;
             while (flag) {
-                if (imageBeans[0] != null && imageBeans[0].getImgPath().length() > 0) {
+                if (imageBeans.size() > 0 && imageBeans.get(0).getImgPath().length() > 0) {
                     flag = false;
                 }
             }
@@ -228,15 +225,14 @@ public class PickerActivity extends AppCompatActivity implements PickerView {
             c.moveToFirst();
 
             setPathDir(c.getString(c.getColumnIndex(MediaStore.Images.Media.DATA)), c.getString(c.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME)));
-            int position = 0;
             while (true) {
                 path = c.getString(c.getColumnIndex(MediaStore.Images.Thumbnails.DATA));
                 if (c.isLast()) {
-                    imageBeans[position] = new ImageBean(-1, path);
+                    imageBeans.add(new ImageBean(-1, path));
                     c.close();
                     break;
                 } else {
-                    imageBeans[position++] = new ImageBean(-1, path);
+                    imageBeans.add(new ImageBean(-1, path));
                     c.moveToNext();
                 }
             }
@@ -281,4 +277,6 @@ public class PickerActivity extends AppCompatActivity implements PickerView {
         setResult(Define.TRANS_IMAGES_RESULT_CODE, i);
         finish();
     }
+
+
 }

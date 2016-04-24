@@ -10,6 +10,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -68,8 +69,10 @@ public class AlbumActivity extends AppCompatActivity implements AlbumView {
                 finish();
             } else if (resultCode == Define.TRANS_IMAGES_RESULT_CODE) {
                 ArrayList<String> path = data.getStringArrayListExtra(Define.INTENT_PATH);
-                if (path != null)
+                if (path != null) {
+                    Log.d("pathSize", String.valueOf(path.size()));
                     adapter.setPath(path);
+                }
             }
         }
     }
@@ -114,7 +117,10 @@ public class AlbumActivity extends AppCompatActivity implements AlbumView {
     @Override
     public void setAlbum(ArrayList<Album> albumList) {
         noAlbum.setVisibility(View.GONE);
-        adapter = new AlbumListAdapter(albumList, getIntent().getStringArrayListExtra(Define.INTENT_PATH));
+        if (adapter == null)
+            adapter = new AlbumListAdapter(albumList);
+        else
+            adapter.setAlbumlist(albumList);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         recyclerView.scrollBy(0, position);
