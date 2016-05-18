@@ -154,7 +154,6 @@ public class AlbumActivity extends AppCompatActivity {
     }
 
 
-
     public class DisplayImage extends AsyncTask<Void, Void, Boolean> {
 
         @Override
@@ -314,15 +313,18 @@ public class AlbumActivity extends AppCompatActivity {
         if (id == android.R.id.home) {
             finish();
         } else if (id == R.id.action_ok) {
-            if (adapter.getPath().size() == 0) {
+            if (adapter != null) {
+                if (adapter.getPath().size() == 0) {
 //                Toast.makeText(this, getString(R.string.msg_no_slected), Toast.LENGTH_SHORT).show();
-                Snackbar.make(recyclerView, Define.MESSAGE_NOTHING_SELECTED, Snackbar.LENGTH_SHORT).show();
-            } else {
-                Intent i = new Intent();
-                i.putStringArrayListExtra(Define.INTENT_PATH, adapter.getPath());
-                setResult(RESULT_OK, i);
-                finish();
+                    Snackbar.make(recyclerView, Define.MESSAGE_NOTHING_SELECTED, Snackbar.LENGTH_SHORT).show();
+                } else {
+                    Intent i = new Intent();
+                    i.putStringArrayListExtra(Define.INTENT_PATH, adapter.getPath());
+                    setResult(RESULT_OK, i);
+                    finish();
+                }
             }
+
         }
         return super.onOptionsItemSelected(item);
     }
