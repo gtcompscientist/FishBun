@@ -63,7 +63,7 @@ public class PickerController {
     }
 
     public void setActionbarTitle(int total) {
-        if (Define.ALBUM_PICKER_COUNT == 1)
+        if (Define.ALBUM_PICKER_COUNT <= 1)
             actionBar.setTitle(bucketTitle);
         else
             actionBar.setTitle(bucketTitle + "(" + String.valueOf(total) + "/" + Define.ALBUM_PICKER_COUNT + ")");

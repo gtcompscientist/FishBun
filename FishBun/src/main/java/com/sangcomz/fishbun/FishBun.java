@@ -46,7 +46,7 @@ public class FishBun {
             return baseProperty;
         }
 
-        public BaseProperty setAlbumThumnaliSize(int size) {
+        public BaseProperty setAlbumThumbnailSize(int size) {
             Define.ALBUM_THUMNAIL_SIZE = size;
             return baseProperty;
         }
@@ -63,7 +63,7 @@ public class FishBun {
 
         public BaseProperty setPickerCount(int count) {
             if (count <= 0)
-                count = 1;
+                count = -1;//Allow infinite
             Define.ALBUM_PICKER_COUNT = count;
             return baseProperty;
         }
@@ -106,7 +106,7 @@ public class FishBun {
         }
 
         @Override
-        public BaseProperty setButtonInAlbumActiviy(boolean isButton) {
+        public BaseProperty setButtonInAlbumActivity(boolean isButton) {
             Define.IS_BUTTON = isButton;
             return baseProperty;
         }
@@ -154,7 +154,7 @@ public class FishBun {
 
         BaseProperty setArrayPaths(ArrayList<String> arrayPaths);
 
-        BaseProperty setAlbumThumnaliSize(int size);
+        BaseProperty setAlbumThumbnailSize(int size);
 
         BaseProperty setPickerSpanCount(int spanCount);
 
@@ -172,7 +172,7 @@ public class FishBun {
 
         BaseProperty textOnImagesSelectionLimitReached(String message);
 
-        BaseProperty setButtonInAlbumActiviy(boolean isButton);
+        BaseProperty setButtonInAlbumActivity(boolean isButton);
 
         void startAlbum();
     }

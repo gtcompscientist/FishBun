@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
                     .textOnImagesSelectionLimitReached("Limit Reached!")
                     .textOnNothingSelected("Nothing Selected")
                     .setArrayPaths(path)
-                    .setButtonInAlbumActiviy(true)
+                    .setButtonInAlbumActivity(true)
                     .setCamera(true)
                     .startAlbum();
             return true;

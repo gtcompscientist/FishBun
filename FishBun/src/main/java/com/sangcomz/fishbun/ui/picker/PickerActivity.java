@@ -18,12 +18,12 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.sangcomz.fishbun.R;
 import com.sangcomz.fishbun.adapter.PickerGridAdapter;
 import com.sangcomz.fishbun.bean.Album;
 import com.sangcomz.fishbun.bean.ImageBean;
-import com.sangcomz.fishbun.bean.PickedImageBean;
 import com.sangcomz.fishbun.define.Define;
 import com.sangcomz.fishbun.permission.PermissionCheck;
 import com.sangcomz.fishbun.util.UiUtil;
@@ -35,7 +35,7 @@ import java.util.ArrayList;
 public class PickerActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private ArrayList<PickedImageBean> pickedImageBeans;
+    private ArrayList<ImageBean> imageBeans;
     private PickerController pickerController;
     private Album a;
     PermissionCheck permissionCheck;
@@ -69,17 +69,17 @@ public class PickerActivity extends AppCompatActivity {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, Define.PHOTO_SPAN_COUNT, GridLayoutManager.VERTICAL, false);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(gridLayoutManager);
-        pickedImageBeans = new ArrayList<>();
+        imageBeans = new ArrayList<>();
 
         pickerController = new PickerController(this, getSupportActionBar(), recyclerView, a.bucketname);
 
         ArrayList<String> path = getIntent().getStringArrayListExtra(Define.INTENT_PATH);
         if (path != null) {
             for (int i = 0; i < path.size(); i++) {
-                pickedImageBeans.add(new PickedImageBean(i + 1, path.get(i), -1));
+                imageBeans.add(new ImageBean(i + 1, path.get(i)));
             }
         }
-        pickerController.setActionbarTitle(pickedImageBeans.size());
+        pickerController.setActionbarTitle(imageBeans.size());
 
         permissionCheck = new PermissionCheck(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -94,7 +94,7 @@ public class PickerActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_photo_album, menu);
+        getMenuInflater().inflate(R.menu.menu_photo_picker, menu);
         return true;
     }
 
@@ -106,6 +106,15 @@ public class PickerActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_ok) {
+            ArrayList<ImageBean> pickedImageBeans = new ArrayList<>();
+            for (ImageBean b : imageBeans) {
+                if (b.SelectedOrder == null)
+                    continue;
+                if (b.SelectedOrder > pickedImageBeans.size())
+                    pickedImageBeans.add(b);
+                else
+                    pickedImageBeans.add(b.SelectedOrder, b);
+            }
             if (pickedImageBeans.size() == 0) {
 //                Toast.makeText(this, getString(R.string.msg_no_slected), Toast.LENGTH_SHORT).show();
                 Snackbar.make(recyclerView, Define.MESSAGE_NOTHING_SELECTED, Snackbar.LENGTH_SHORT).show();
@@ -120,6 +129,11 @@ public class PickerActivity extends AppCompatActivity {
                 finish();
             }
             return true;
+        } else if (id == R.id.action_all) {
+            for (int i = 0; i < imageBeans.size(); i++) {
+                imageBeans.get(i).SelectedOrder = i;
+                adapter.notifyItemChanged(i);
+            }
         } else if (id == android.R.id.home)
             transImageFinish();
         return super.onOptionsItemSelected(item);
@@ -136,8 +150,11 @@ public class PickerActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(ImageBean[] result) {
             super.onPostExecute(result);
+            for (int i = 0; i < result.length; i++)
+                imageBeans.add(result[i]);
+
             adapter = new PickerGridAdapter(
-                result, pickedImageBeans, pickerController, getPathDir());
+                imageBeans, pickerController, getPathDir());
             recyclerView.setAdapter(adapter);
         }
     }
@@ -203,9 +220,42 @@ public class PickerActivity extends AppCompatActivity {
         if (requestCode == Define.TAKE_A_PICK_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 startFileMediaScan(pickerController.getSavePath());
-                adapter.addImage(pickerController.getSavePath());
+                adapter.addImage(pickerController.getSavePath(), pickCount++);
             } else {
                 new File(pickerController.getSavePath()).delete();
+            }
+        }
+    }
+
+    private int pickCount = 0;
+
+    public void selectPhoto(View v) {
+        if (v == null || v.getTag() == null)
+            return;
+        Object vTag = v.getTag();
+        if (!(vTag instanceof ImageBean))
+            return;
+
+        ImageBean bean = (ImageBean)vTag;
+        if (bean.SelectedOrder == null) {
+            bean.SelectedOrder = pickCount++;
+            for (int i = 0; i < imageBeans.size(); i++) {
+                if (imageBeans.get(i).equals(bean)) {
+                    adapter.notifyItemChanged(i);
+                    break;
+                }
+            }
+        } else {
+            int removed = bean.SelectedOrder;
+            bean.SelectedOrder = null;
+            for (int i = 0; i < imageBeans.size(); i++) {
+                ImageBean b = imageBeans.get(i);
+                if (b.equals(bean)) {
+                    adapter.notifyItemChanged(i);
+                } else if (b.SelectedOrder != null && b.SelectedOrder > removed) {
+                    b.SelectedOrder--;
+                    adapter.notifyItemChanged(i);
+                }
             }
         }
     }
@@ -228,8 +278,13 @@ public class PickerActivity extends AppCompatActivity {
 
     private void transImageFinish() {
         ArrayList<String> path = new ArrayList<>();
-        for (int i = 0; i < pickedImageBeans.size(); i++) {
-            path.add(pickedImageBeans.get(i).getImgPath());
+        for (ImageBean b : imageBeans) {
+            if (b.SelectedOrder == null)
+                continue;
+            if (b.SelectedOrder > path.size())
+                path.add(b.getImgPath());
+            else
+                path.add(b.SelectedOrder, b.getImgPath());
         }
         Intent i = new Intent();
         i.putStringArrayListExtra(Define.INTENT_PATH, path);
