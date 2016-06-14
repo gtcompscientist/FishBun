@@ -134,6 +134,7 @@ public class PickerActivity extends AppCompatActivity {
                 imageBeans.get(i).SelectedOrder = i;
                 adapter.notifyItemChanged(i);
             }
+            pickerController.setActionbarTitle(imageBeans.size());
         } else if (id == android.R.id.home)
             transImageFinish();
         return super.onOptionsItemSelected(item);
@@ -258,6 +259,7 @@ public class PickerActivity extends AppCompatActivity {
                 }
             }
         }
+        pickerController.setActionbarTitle(pickCount);
     }
 
     //MediaScanning

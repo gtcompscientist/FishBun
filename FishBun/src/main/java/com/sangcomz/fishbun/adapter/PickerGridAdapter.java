@@ -110,7 +110,7 @@ public class PickerGridAdapter
             if (Define.ALBUM_PICKER_COUNT <= 1)
                 vh.txtPickCount.setText("");
             else
-                vh.txtPickCount.setText(String.valueOf(imageBean.SelectedOrder));
+                vh.txtPickCount.setText(String.valueOf(imageBean.SelectedOrder + 1));
         } else
             vh.txtPickCount.setVisibility(View.GONE);
 
