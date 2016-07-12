@@ -314,7 +314,7 @@ public class AlbumActivity extends AppCompatActivity {
         if (id == android.R.id.home) {
             finish();
         } else if (id == R.id.action_ok) {
-            if (adapter.getPath().size() == 0) {
+            if (adapter == null || adapter.getPath() == null || adapter.getPath().isEmpty()) {
 //                Toast.makeText(this, getString(R.string.msg_no_slected), Toast.LENGTH_SHORT).show();
                 Snackbar.make(recyclerView, Define.MESSAGE_NOTHING_SELECTED, Snackbar.LENGTH_SHORT).show();
             } else {
