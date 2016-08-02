@@ -258,6 +258,7 @@ public class PickerActivity extends AppCompatActivity {
                     adapter.notifyItemChanged(i);
                 }
             }
+            pickCount--;
         }
         pickerController.setActionbarTitle(pickCount);
     }
